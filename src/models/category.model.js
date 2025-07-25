@@ -7,7 +7,7 @@ const categorySchema = new Schema(
       required: true,
       trim: true,
     },
-    categroyDescription: {
+    categoryDescription: {
       type: String,
       required: true,
       trim: true,
@@ -22,5 +22,5 @@ const categorySchema = new Schema(
   }
 );
 
-const CategroyModel = mongoose.model("categories", categorySchema);
-module.exports = { CategroyModel };
+const CategoryModel = mongoose.model("categories", categorySchema);
+module.exports = { CategoryModel };
