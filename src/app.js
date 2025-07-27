@@ -22,7 +22,10 @@ app.put("/update-category/:id", categoryController.updateCategory);
 app.delete("/delete-category/:id", categoryController.deleteCategory);
 
 //blog routes
+app.get("/get-all-blog", blogController.getAllBlog);
+app.get("/get-single-blog/:id", blogController.getSingleBlog);
 app.post("/create-blog", upload.single("image"), blogController.createBlog);
+app.put("/update-blog/:id", upload.single("image"), blogController.updateBlog);
 
 app.use("/blog", express.static("public/temp"));
 

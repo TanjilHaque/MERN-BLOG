@@ -1,5 +1,8 @@
 const { BlogModel } = require("../models/blog.model");
 const { validateBody } = require("../helpers/validator");
+const fs = require("fs");
+const path = require("path");
+
 exports.createBlog = async (req, res) => {
   try {
     const { empty, fieldName } = validateBody;
@@ -35,6 +38,102 @@ exports.createBlog = async (req, res) => {
   } catch (err) {
     return res.status(401).json({
       msg: `error from create blog controller`,
+      error: err,
+    });
+  }
+};
+
+exports.getAllBlog = async (req, res) => {
+  console.log("getAll blogs e dhukse");
+  try {
+    const allBlogs = await BlogModel.find();
+    if (!allBlogs) {
+      return res.status(401).json({
+        msg: `all blogs not found`,
+      });
+    }
+    return res.status(201).json({
+      msg: `all blogs found`,
+      data: allBlogs,
+    });
+  } catch (err) {
+    return res.status(401).json({
+      msg: `error from get all blog controller`,
+      error: err,
+    });
+  }
+};
+
+exports.getSingleBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(401).json({
+        msg: `blog id not found`,
+        error: err,
+      });
+    }
+    const singleBlog = await BlogModel.findById({ _id: id });
+    if (!singleBlog) {
+      return res.status(401).json({
+        msg: `single blog not found`,
+      });
+    }
+    return res.status(201).json({
+      msg: `single blog found successfully`,
+      data: singleBlog,
+      status: "ok",
+    });
+  } catch (err) {
+    return res.status(401).json({
+      msg: `error from single blog controller`,
+      error: err,
+    });
+  }
+};
+
+exports.updateBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blog = await BlogModel.findById(id);
+    if (!blog) {
+      return res.status(401).json({
+        msg: `blog not found`,
+        error: err,
+      });
+    }
+    if (req.body?.blogTitle) {
+      blog.blogTitle = req.body?.blogTitle;
+    }
+    if (req.body?.blogDescription) {
+      blog.blogDescription = req.body?.blogDescription;
+    }
+
+    if (req.file) {
+      try {
+        const oldImagePart = blog.image.split("/");
+        const oldImageName = oldImagePart[oldImagePart.length - 1];
+        const targetPath = path.join("public", "temp", oldImageName);
+        fs.unlinkSync(targetPath);
+      } catch (err) {
+        return res.status(401).json({
+          msg: `Old image deletion failed`,
+          error: err,
+        });
+      }
+      blog.image = `http://localhost:4000/blog/${req.file?.filename}`;
+    } else {
+      blog.image = blog.image;
+    }
+    await blog.save();
+    return res.status(200).json({
+      msg: "Blog updated successfully",
+      updatedBlog: blog,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({
+      msg: `error from update blog controller`,
       error: err,
     });
   }
