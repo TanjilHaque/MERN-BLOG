@@ -26,6 +26,7 @@ app.get("/get-all-blog", blogController.getAllBlog);
 app.get("/get-single-blog/:id", blogController.getSingleBlog);
 app.post("/create-blog", upload.single("image"), blogController.createBlog);
 app.put("/update-blog/:id", upload.single("image"), blogController.updateBlog);
+app.delete("/delete-blog/:id", blogController.deleteBlog);
 
 app.use("/blog", express.static("public/temp"));
 

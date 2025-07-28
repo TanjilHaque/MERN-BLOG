@@ -138,3 +138,38 @@ exports.updateBlog = async (req, res) => {
     });
   }
 };
+
+exports.deleteBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blog = await BlogModel.findById(id);
+    if (!blog) {
+      return res.status(401).json({
+        msg: `blog not found from the id while deleteing`,
+      });
+    }
+
+    try {
+      const oldImagePart = blog.image.split("/");
+      const oldImageName = oldImagePart[oldImagePart.length - 1];
+      const targetPath = path.join("public", "temp", oldImageName);
+      fs.unlinkSync(targetPath);
+    } catch (err) {
+      return res.status(401).json({
+        msg: `Old image deletation failed`,
+      });
+    }
+
+    const deleteItem = await BlogModel.findByIdAndDelete(id);
+    return res.status(201).json({
+      msg: `blog deleted successfully`,
+      data: deleteItem,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({
+      msg: `error from delete blog controller`,
+      error: err,
+    });
+  }
+};
