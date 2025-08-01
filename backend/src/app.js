@@ -6,9 +6,12 @@ const userController = require("./controller/user.controller");
 const categoryController = require("./controller/category.controller");
 const blogController = require("./controller/blog.controller");
 const upload = require("./middleware/multer.middleware");
+const cors = require("cors");
 //body parsing middlewares
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 //auth routes
 app.post("/registration", userController.registration);
